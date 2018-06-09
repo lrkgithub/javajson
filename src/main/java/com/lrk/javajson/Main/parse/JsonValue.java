@@ -1,3 +1,5 @@
+package main.java.com.lrk.javajson.Main.parse;
+
 public class JsonValue {
 
     JsonToken token;

@@ -1,3 +1,7 @@
+package main.java.com.lrk.javajson.Main;
+
+import main.java.com.lrk.javajson.Main.parse.JsonToken;
+import main.java.com.lrk.javajson.Main.parse.JsonValue;
 
 public class Parse implements ParseJson {
 
@@ -11,7 +15,7 @@ public class Parse implements ParseJson {
     public JsonValue parseJson() throws Exception{
         index = 0;
         while (index < jsonchars.length) {
-            JsonValue jv = parse(jsonchars);
+            JsonValue jv = parse();
             if (jv == null) {
                 System.out.println("inner wrong!");
             } else if (jv.getToken().equals(JsonToken.BADTOKEN)) {
@@ -31,13 +35,16 @@ public class Parse implements ParseJson {
         return null;
     }
 
-    private JsonValue parse(char[] jsons) throws Exception{
+    private JsonValue parse() throws Exception{
+        char[] jsons = this.jsonchars;
+
         while (index < jsons.length) {
             char next = jsons[index];
             if (next == '\n' || next == '\t' || next == '\f') {
                 index++;
                 continue;
             }
+
             JsonValue jv = new JsonValue();
             if(isDigital(next)) {
                  jv = parseNumber(jsons);

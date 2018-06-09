@@ -1,3 +1,11 @@
+package main.java.com.lrk.javajson.syntax;
+
+import main.java.com.lrk.javajson.elment.JsonArray;
+import main.java.com.lrk.javajson.elment.JsonObject;
+import main.java.com.lrk.javajson.Main.parse.JsonToken;
+import main.java.com.lrk.javajson.Main.parse.JsonValue;
+import main.java.com.lrk.javajson.Main.ParseJson;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,6 +75,10 @@ public class SyntaxParse implements Syntax {
         return null;
     }
 
+    /**
+     *
+     * @return 一个json的值
+     */
     private JsonValue getJsonValue() {
         try {
             JsonValue jv = parse.parseJson();
