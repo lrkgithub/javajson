@@ -2,7 +2,7 @@ package main.java.com.lrk.javajson.Main.parse;
 
 public abstract class JsonValue {
 
-    JsonToken token;
+    private JsonToken token;
 
     public void setToken(JsonToken token) {
         this.token = token;
@@ -22,6 +22,9 @@ public abstract class JsonValue {
 
 //    存放符号的方法
     public void setSymbol(String v) {}
+
+//    存放错误解析的地方
+    public void setEmpty(String e) {}
 
     @Override
     public String toString() {

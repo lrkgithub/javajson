@@ -1,5 +1,7 @@
 package main.java.com.lrk.javajson.syntax;
 
+import main.java.com.lrk.javajson.Main.parse.JsonValue;
+
 import java.util.Map;
 
 public interface Syntax {
@@ -13,6 +15,6 @@ public interface Syntax {
     /**
      * 解析json的方法，得到的是一个Map
      */
-    Map syntaxJson() throws Exception;
+    JsonValue syntaxJson() throws Exception;
 
 }

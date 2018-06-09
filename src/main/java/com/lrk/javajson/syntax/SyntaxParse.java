@@ -1,13 +1,16 @@
 package main.java.com.lrk.javajson.syntax;
 
 import main.java.com.lrk.javajson.elment.JsonArray;
+import main.java.com.lrk.javajson.elment.JsonEmpty;
 import main.java.com.lrk.javajson.elment.JsonObject;
 import main.java.com.lrk.javajson.Main.parse.JsonToken;
 import main.java.com.lrk.javajson.Main.parse.JsonValue;
 import main.java.com.lrk.javajson.Main.ParseJson;
 import main.java.com.lrk.javajson.elment.JsonSymbol;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SyntaxParse implements Syntax {
@@ -23,53 +26,89 @@ public class SyntaxParse implements Syntax {
         parse.setJsonschars(jsonString);
     }
 
-    public Map syntaxJson() throws Exception {
-        HashMap<Object, Object> hm = new HashMap<Object, Object>();
+    public JsonValue syntaxJson() throws Exception {
+        JsonValue jsonValue = new JsonEmpty();
         try {
-            parseObject();
+            if (this.parse.isMap()) {
+                jsonValue = parseObject();
+            } else if (this.parse.isArray()) {
+                jsonValue = parseArray();
+            } else {
+                jsonValue = getJsonValue();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return hm;
+        return jsonValue;
     }
 
-    private JsonObject parseObject() {
+    private JsonObject parseObject() throws Exception {
+
+        JsonObject jo = new JsonObject();
+
         JsonValue jvLb = getJsonValue();
         if (!jvLb.getToken().equals(JsonToken.LB)) {
-            System.out.println("must be { : " + jvLb.get());
+            System.out.println("must be LB : " + jvLb.get());
             return null;
         }
+
+        List<Entry> entrys = parseEntry();
+
+        for (Entry entry : entrys) {
+            jo.add(entry.getKey(), entry.getValue());
+        }
+
+        JsonValue jvRb = getJsonValue();
+        if (!jvRb.getToken().equals(JsonToken.RB)) {
+            System.out.println("must be RB : " + jvRb.get());
+            return null;
+        }
+
+
+        return jo;
+    }
+
+    private List<Entry> parseEntry() throws Exception {
+
+        List<Entry> entrys = new ArrayList<Entry>();
+
         JsonValue jvKey = getJsonValue();
         if(!jvKey.getToken().equals(JsonToken.STRING)) {
             System.out.println("must be string : " + jvKey.get());
         }
-        Object jvValue = parseValue();
-        JsonObject jo = new JsonObject();
-        JsonValue jvRb = getJsonValue();
-        if (!jvRb.getToken().equals(JsonToken.RB)) {
-            System.out.println("must be { : " + jvRb.get());
-            return null;
+
+        JsonValue jvColon = syntaxJson();
+
+        if (!jvColon.getToken().equals(JsonToken.COLON)) {
+            System.out.println("must be colon : " + jvColon.get());
         }
-        jo.add(jvKey, jvValue);
-        return jo;
-    }
 
-    private Object parseValue() {
+        JsonValue jvValue = syntaxJson();
 
-        JsonValue jv = getJsonValue();
-        Object value = null;
+        entrys.add(new Entry(jvKey, jvValue));
 
-        if(jv.getToken().equals(JsonToken.LL)) {
-            JsonArray ja = parseArray();
-            jv = getJsonValue();
-            if(!jv.getToken().equals(JsonToken.RL)) {
+        while (this.parse.isComma()) {
 
+            JsonValue jvComma = getJsonValue();
+            if(!jvKey.getToken().equals(JsonToken.COMMA)) {
+                System.out.println("must be comma : " + jvComma.get());
             }
+
+            jvKey = getJsonValue();
+            if(!jvKey.getToken().equals(JsonToken.STRING)) {
+                System.out.println("must be string : " + jvKey.get());
+            }
+
+            jvColon = syntaxJson();
+
+            if (!jvColon.getToken().equals(JsonToken.COLON)) {
+                System.out.println("must be colon : " + jvColon.get());
+            }
+
+            jvValue = syntaxJson();
+            entrys.add(new Entry(jvKey, jvValue));
         }
-
-
-
-        return null;
+        return entrys;
     }
 
     private JsonArray parseArray() {
@@ -90,6 +129,25 @@ public class SyntaxParse implements Syntax {
             jv.setToken(JsonToken.BADTOKEN);
             jv.setSymbol("axiba");
             return jv;
+        }
+    }
+
+    class Entry {
+
+        private JsonValue key;
+        private JsonValue value;
+
+        Entry(JsonValue key, JsonValue value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public JsonValue getKey() {
+            return this.key;
+        }
+
+        public JsonValue getValue() {
+            return this.value;
         }
     }
 

@@ -8,11 +8,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class JsonObject {
+public class JsonObject extends JsonValue {
 
-    Map<JsonValue, Object> map = new LinkedHashMap<JsonValue, Object>();
+    Map<JsonValue, JsonValue> map = new LinkedHashMap<JsonValue, JsonValue>();
 
-    public void add(JsonValue jv1, Object jv2) {
+    public void add(JsonValue jv1, JsonValue jv2) {
         if(!jv1.getToken().equals(JsonToken.STRING)) {
             return;
         }
@@ -30,17 +30,17 @@ public class JsonObject {
         result.append("{");
 
 
-        Set<Map.Entry<JsonValue, Object>> entry = map.entrySet();
-        Iterator<Map.Entry<JsonValue, Object>> it = entry.iterator();
+        Set<Map.Entry<JsonValue, JsonValue>> entry = map.entrySet();
+        Iterator<Map.Entry<JsonValue, JsonValue>> it = entry.iterator();
 
         //  此处至少有一个值
         while (true) {
 
-            Map.Entry<JsonValue, Object> entry1 = it.next();
+            Map.Entry<JsonValue, JsonValue> entry1 = it.next();
 
             result.append(entry1.getKey().get());
             result.append(":");
-            result.append(entry1.getValue().toString());
+            result.append(entry1.getValue().get());
 
             if (it.hasNext()) {
                 result.append(",");

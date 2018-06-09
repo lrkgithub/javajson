@@ -13,4 +13,34 @@ public interface ParseJson {
      */
     JsonValue parseJson() throws Exception;
 
+    /**
+     * 当前解析是否是map
+     * @return 如果是map，返回true
+     */
+    boolean isMap();
+
+    /**
+     * 当前解析是否是array
+     * @return 如果是array，返回true
+     */
+    boolean isArray();
+
+    /**
+     * 解析当前是否是map的结束
+     * @return 如果是map的结束，返回true
+     */
+    boolean isMapEnd();
+
+    /**
+     * 解析当前是否是array的结束
+     * @return 如果是array的结束，返回true
+     */
+    boolean isArrayEnd();
+
+    /**
+     * 解析当前是否是逗号
+     * @return 如果是逗号，返回true
+     */
+    boolean isComma();
+
 }

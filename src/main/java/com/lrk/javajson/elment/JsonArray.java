@@ -1,10 +1,12 @@
 package main.java.com.lrk.javajson.elment;
 
+import main.java.com.lrk.javajson.Main.parse.JsonValue;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class JsonArray {
+public class JsonArray extends JsonValue {
 
     List<Object> ll = new LinkedList<Object>();
 

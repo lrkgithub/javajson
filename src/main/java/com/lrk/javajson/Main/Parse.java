@@ -2,6 +2,7 @@ package main.java.com.lrk.javajson.Main;
 
 import main.java.com.lrk.javajson.Main.parse.JsonToken;
 import main.java.com.lrk.javajson.Main.parse.JsonValue;
+import main.java.com.lrk.javajson.elment.JsonEmpty;
 import main.java.com.lrk.javajson.elment.JsonFalse;
 import main.java.com.lrk.javajson.elment.JsonNull;
 import main.java.com.lrk.javajson.elment.JsonNumber;
@@ -11,7 +12,7 @@ import main.java.com.lrk.javajson.elment.JsonTrue;
 
 public class Parse implements ParseJson {
 
-    private int index;
+    private int index = 0;
     private char[] jsonchars;
 
     public void setJsonschars(String jsonString) {
@@ -19,23 +20,24 @@ public class Parse implements ParseJson {
     }
 
     public JsonValue parseJson() throws Exception{
-        index = 0;
+//        index = 0;
         while (index < jsonchars.length) {
             JsonValue jv = parse();
             if (jv == null) {
                 System.out.println("inner wrong!");
+                return jv;
             } else if (jv.getToken().equals(JsonToken.BADTOKEN)) {
                 System.out.println("bad token ! " + jv.get());
                 throw new Exception();
             } else if (jv.getToken().equals(JsonToken.NUMBER)) {
                 System.out.println("number is " + jv.get());
-//                return jv;
+                return jv;
             } else if (jv.getToken().equals(JsonToken.STRING)) {
                 System.out.println("String is " + jv.get());
-//                return jv;
+                return jv;
             } else {
-                System.out.println("the token is " + jv.get());
-//                return jv;
+                System.out.println("the token is " + jv.getToken() + " and the value is " + jv.get());
+                return jv;
             }
         }
         return null;
@@ -46,7 +48,7 @@ public class Parse implements ParseJson {
 
         while (index < jsons.length) {
             char next = jsons[index];
-            if (next == '\n' || next == '\t' || next == '\f') {
+            if (next == '\n' || next == '\t' || next == '\f' || next == 32) {
                 index++;
                 continue;
             }
@@ -99,26 +101,42 @@ public class Parse implements ParseJson {
                     jv.setSymbol(",");
                     break;
                 default :
-                    jv = new JsonSymbol();
+                    jv = new JsonEmpty();
                     jv.setToken(JsonToken.BADTOKEN);
                     jv.setSymbol(next + "");
             }
             index++;
             return jv;
         }
-        return null;
+        return new JsonEmpty();
 
+    }
+
+    public boolean isMap() {
+        return '{' == this.jsonchars[index];
+    }
+
+    public boolean isArray() {
+        return '[' == this.jsonchars[index];
+    }
+
+    public boolean isMapEnd() {
+        return '}' == this.jsonchars[index];
+    }
+
+    public boolean isArrayEnd() {
+        return ']' == this.jsonchars[index];
+    }
+
+    public boolean isComma() {
+        return ',' == this.jsonchars[index];
     }
 
     private JsonValue parseNumber(char[] jsons) throws Exception {
 
-        boolean negative = false;
         String value = jsons[index] + "";
-        int start = index;
-        Double number = null;
 
         if (value.equals("-")) {
-            negative = true;
             value += jsons[++index] + "";
         }
 
@@ -141,29 +159,12 @@ public class Parse implements ParseJson {
             }
         }
 
-        if (negative) {
-            if (index >= start + 1) {
-                number = Double.parseDouble(value);
-            }
-        } else {
-            if (index >= start) {
-                number = Double.parseDouble(value);
-            }
-        }
-
         index++;
 
-        if (number != null) {
-            JsonValue jv = new JsonNumber();
-            jv.setToken(JsonToken.NUMBER);
-            jv.setNumber(number + "");
-            return jv;
-        } else {
-            JsonValue jv = new JsonSymbol();
-            jv.setToken(JsonToken.BADTOKEN);
-            jv.setSymbol(jsons[index] + "");
-            return jv;
-        }
+        JsonValue jv = new JsonNumber();
+        jv.setToken(JsonToken.NUMBER);
+        jv.setNumber(value);
+        return jv;
     }
 
     private boolean isDigital(char x) {
