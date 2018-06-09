@@ -21,11 +21,11 @@ public class Parse implements ParseJson {
 
     public JsonValue parseJson() throws Exception{
 //        index = 0;
-        while (index < jsonchars.length) {
+        if (index < jsonchars.length) {
             JsonValue jv = parse();
             if (jv == null) {
                 System.out.println("inner wrong!");
-                return jv;
+                return null;
             } else if (jv.getToken().equals(JsonToken.BADTOKEN)) {
                 System.out.println("bad token ! " + jv.get());
                 throw new Exception();
@@ -43,7 +43,7 @@ public class Parse implements ParseJson {
         return null;
     }
 
-    private JsonValue parse() throws Exception{
+    private JsonValue parse() {
         char[] jsons = this.jsonchars;
 
         while (index < jsons.length) {
@@ -53,7 +53,7 @@ public class Parse implements ParseJson {
                 continue;
             }
 
-            JsonValue jv = null;
+            JsonValue jv;
             if(isDigital(next)) {
                  jv = parseNumber(jsons);
                  if(jv != null) {
@@ -113,26 +113,42 @@ public class Parse implements ParseJson {
     }
 
     public boolean isMap() {
+        skip();
         return '{' == this.jsonchars[index];
     }
 
     public boolean isArray() {
+        skip();
         return '[' == this.jsonchars[index];
     }
 
     public boolean isMapEnd() {
+        skip();
         return '}' == this.jsonchars[index];
     }
 
     public boolean isArrayEnd() {
+        skip();
         return ']' == this.jsonchars[index];
     }
 
     public boolean isComma() {
+        skip();
         return ',' == this.jsonchars[index];
     }
 
-    private JsonValue parseNumber(char[] jsons) throws Exception {
+    private void skip() {
+        while (index < jsonchars.length) {
+            char next = jsonchars[index];
+            if (next == '\n' || next == '\t' || next == '\f' || next == 32) {
+                index++;
+            } else {
+                break;
+            }
+        }
+    }
+
+    private JsonValue parseNumber(char[] jsons) {
 
         String value = jsons[index] + "";
 
@@ -168,11 +184,9 @@ public class Parse implements ParseJson {
     }
 
     private boolean isDigital(char x) {
-        if ((48 <= x && x <= 57) || (x == '-')) {
-            return true;
-        } else {
-            return false;
-        }
+
+        return (48 <= x && x <= 57) || x == '-';
+
     }
 
     private JsonValue parseNullFalseTrue(char[] jsons) {

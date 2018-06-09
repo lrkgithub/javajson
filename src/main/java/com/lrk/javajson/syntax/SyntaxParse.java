@@ -15,8 +15,7 @@ import java.util.Map;
 
 public class SyntaxParse implements Syntax {
 
-    ParseJson parse;
-    JsonValue aHead;
+    private ParseJson parse;
 
     public SyntaxParse(ParseJson parse) {
         this.parse = parse;
@@ -26,7 +25,7 @@ public class SyntaxParse implements Syntax {
         parse.setJsonschars(jsonString);
     }
 
-    public JsonValue syntaxJson() throws Exception {
+    public JsonValue syntaxJson() {
         JsonValue jsonValue = new JsonEmpty();
         try {
             if (this.parse.isMap()) {
@@ -42,7 +41,7 @@ public class SyntaxParse implements Syntax {
         return jsonValue;
     }
 
-    private JsonObject parseObject() throws Exception {
+    private JsonObject parseObject() {
 
         JsonObject jo = new JsonObject();
 
@@ -52,9 +51,9 @@ public class SyntaxParse implements Syntax {
             return null;
         }
 
-        List<Entry> entrys = parseEntry();
+        List<Entry> entries = parseEntry();
 
-        for (Entry entry : entrys) {
+        for (Entry entry : entries) {
             jo.add(entry.getKey(), entry.getValue());
         }
 
@@ -68,9 +67,13 @@ public class SyntaxParse implements Syntax {
         return jo;
     }
 
-    private List<Entry> parseEntry() throws Exception {
+    private List<Entry> parseEntry() {
 
-        List<Entry> entrys = new ArrayList<Entry>();
+        List<Entry> entries = new ArrayList<Entry>();
+
+        if (this.parse.isMapEnd()) {
+            return entries;
+        }
 
         JsonValue jvKey = getJsonValue();
         if(!jvKey.getToken().equals(JsonToken.STRING)) {
@@ -85,7 +88,7 @@ public class SyntaxParse implements Syntax {
 
         JsonValue jvValue = syntaxJson();
 
-        entrys.add(new Entry(jvKey, jvValue));
+        entries.add(new Entry(jvKey, jvValue));
 
         while (this.parse.isComma()) {
 
@@ -106,13 +109,44 @@ public class SyntaxParse implements Syntax {
             }
 
             jvValue = syntaxJson();
-            entrys.add(new Entry(jvKey, jvValue));
+            entries.add(new Entry(jvKey, jvValue));
         }
-        return entrys;
+        return entries;
     }
 
     private JsonArray parseArray() {
-        return null;
+
+        JsonValue jvLL = getJsonValue();
+        if(!jvLL.getToken().equals(JsonToken.LL)) {
+            System.out.println("must be LL : " + jvLL.get());
+        }
+
+        JsonArray jvarrs = new JsonArray();
+
+        if (this.parse.isArrayEnd()) {
+            return jvarrs;
+        }
+
+        JsonValue jvEle = syntaxJson();
+        jvarrs.add(jvEle);
+
+        while (this.parse.isComma()) {
+
+            JsonValue jvComma = getJsonValue();
+            if(!jvComma.getToken().equals(JsonToken.COMMA)) {
+                System.out.println("must be COMMA : " + jvComma.get());
+            }
+
+            jvEle = syntaxJson();
+            jvarrs.add(jvEle);
+        }
+
+        JsonValue jvRL = getJsonValue();
+        if(!jvRL.getToken().equals(JsonToken.RL)) {
+            System.out.println("must be RL : " + jvRL.get());
+        }
+
+        return jvarrs;
     }
 
     /**
@@ -121,8 +155,7 @@ public class SyntaxParse implements Syntax {
      */
     private JsonValue getJsonValue() {
         try {
-            JsonValue jv = parse.parseJson();
-            return jv;
+            return parse.parseJson();
         } catch (Exception e) {
             e.printStackTrace();
             JsonValue jv = new JsonSymbol();
@@ -142,11 +175,11 @@ public class SyntaxParse implements Syntax {
             this.value = value;
         }
 
-        public JsonValue getKey() {
+        JsonValue getKey() {
             return this.key;
         }
 
-        public JsonValue getValue() {
+        JsonValue getValue() {
             return this.value;
         }
     }
