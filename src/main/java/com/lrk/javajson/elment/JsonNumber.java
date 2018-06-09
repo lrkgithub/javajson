@@ -10,8 +10,7 @@ public class JsonNumber extends JsonValue {
         this.number = number;
     }
 
-    @Override
-    public String toString() {
+    public String get() {
         return this.number;
     }
 

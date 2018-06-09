@@ -7,12 +7,11 @@ public class JsonString extends JsonValue {
     private String jsonString;
 
     public void setString(String jsonString) {
-        this.jsonString = "\"" + jsonString + "\"";
+        this.jsonString = jsonString;
     }
 
-    @Override
-    public String toString() {
+
+    public String get() {
         return this.jsonString;
     }
-
 }

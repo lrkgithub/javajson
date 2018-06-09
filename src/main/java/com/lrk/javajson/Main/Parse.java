@@ -2,6 +2,12 @@ package main.java.com.lrk.javajson.Main;
 
 import main.java.com.lrk.javajson.Main.parse.JsonToken;
 import main.java.com.lrk.javajson.Main.parse.JsonValue;
+import main.java.com.lrk.javajson.elment.JsonFalse;
+import main.java.com.lrk.javajson.elment.JsonNull;
+import main.java.com.lrk.javajson.elment.JsonNumber;
+import main.java.com.lrk.javajson.elment.JsonString;
+import main.java.com.lrk.javajson.elment.JsonSymbol;
+import main.java.com.lrk.javajson.elment.JsonTrue;
 
 public class Parse implements ParseJson {
 
@@ -19,16 +25,16 @@ public class Parse implements ParseJson {
             if (jv == null) {
                 System.out.println("inner wrong!");
             } else if (jv.getToken().equals(JsonToken.BADTOKEN)) {
-                System.out.println("bad token ! " + jv.getValue());
+                System.out.println("bad token ! " + jv.get());
                 throw new Exception();
             } else if (jv.getToken().equals(JsonToken.NUMBER)) {
-                System.out.println("number is " + jv.getNumber());
+                System.out.println("number is " + jv.get());
 //                return jv;
             } else if (jv.getToken().equals(JsonToken.STRING)) {
-                System.out.println("String is " + jv.getValue());
+                System.out.println("String is " + jv.get());
 //                return jv;
             } else {
-                System.out.println("the token is " + jv.getValue());
+                System.out.println("the token is " + jv.get());
 //                return jv;
             }
         }
@@ -45,7 +51,7 @@ public class Parse implements ParseJson {
                 continue;
             }
 
-            JsonValue jv = new JsonValue();
+            JsonValue jv = null;
             if(isDigital(next)) {
                  jv = parseNumber(jsons);
                  if(jv != null) {
@@ -60,35 +66,42 @@ public class Parse implements ParseJson {
                     jv = parseNullFalseTrue(jsons);
                     break;
                 case ':' :
+                    jv = new JsonSymbol();
                     jv.setToken(JsonToken.COLON);
-                    jv.setValue(":");
+                    jv.setSymbol(":");
                     break;
                 case '\"' :
                     jv = parseString(jsons);
                     break;
                 case '{' :
+                    jv = new JsonSymbol();
                     jv.setToken(JsonToken.LB);
-                    jv.setValue("{");
+                    jv.setSymbol("{");
                     break;
                 case '}' :
+                    jv = new JsonSymbol();
                     jv.setToken(JsonToken.RB);
-                    jv.setValue("}");
+                    jv.setSymbol("}");
                     break;
                 case '[' :
+                    jv = new JsonSymbol();
                     jv.setToken(JsonToken.LL);
-                    jv.setValue("[");
+                    jv.setSymbol("[");
                     break;
                 case ']' :
+                    jv = new JsonSymbol();
                     jv.setToken(JsonToken.RL);
-                    jv.setValue("]");
+                    jv.setSymbol("]");
                     break;
                 case ',' :
+                    jv = new JsonSymbol();
                     jv.setToken(JsonToken.COMMA);
-                    jv.setValue(",");
+                    jv.setSymbol(",");
                     break;
                 default :
+                    jv = new JsonSymbol();
                     jv.setToken(JsonToken.BADTOKEN);
-                    jv.setValue(next + "");
+                    jv.setSymbol(next + "");
             }
             index++;
             return jv;
@@ -141,14 +154,14 @@ public class Parse implements ParseJson {
         index++;
 
         if (number != null) {
-            JsonValue jv = new JsonValue();
+            JsonValue jv = new JsonNumber();
             jv.setToken(JsonToken.NUMBER);
-            jv.setNumber(number);
+            jv.setNumber(number + "");
             return jv;
         } else {
-            JsonValue jv = new JsonValue();
+            JsonValue jv = new JsonSymbol();
             jv.setToken(JsonToken.BADTOKEN);
-            jv.setValue(jsons[index] + "");
+            jv.setSymbol(jsons[index] + "");
             return jv;
         }
     }
@@ -162,31 +175,29 @@ public class Parse implements ParseJson {
     }
 
     private JsonValue parseNullFalseTrue(char[] jsons) {
-        JsonValue jv = new JsonValue();
+        JsonValue jv = null;
         if ((jsons[index] == 'n')
                 && (jsons[index + 1] == 'u')
                 && (jsons[index + 2] == 'l')
                 && (jsons[index + 3] == 'l')) {
+            jv = new JsonNull();
             jv.setToken(JsonToken.NULL);
-            jv.setValue("null");
             index += 4;
         } else if ((jsons[index] == 't')
                 && (jsons[index + 1] == 'r')
                 && (jsons[index + 2] == 'u')
                 && (jsons[index + 3] == 'e')) {
-           jv.setToken(JsonToken.TRUE);
-           jv.setValue("true");
-           index += 4;
+            jv = new JsonTrue();
+            jv.setToken(JsonToken.TRUE);
+            index += 4;
         } else if ((jsons[index] == 'f')
                 && (jsons[index + 1] == 'a')
                 && (jsons[index + 2] == 'l')
                 && (jsons[index + 3] == 's')
                 && (jsons[index + 4] == 'e')) {
+            jv = new JsonFalse();
             jv.setToken(JsonToken.FALSE);
-            jv.setValue("false");
             index += 5;
-        } else {
-            jv = null;
         }
         return jv;
     }
@@ -203,9 +214,9 @@ public class Parse implements ParseJson {
                 break;
             }
         }
-        JsonValue jv = new JsonValue();
+        JsonValue jv = new JsonString();
         jv.setToken(JsonToken.STRING);
-        jv.setValue(value);
+        jv.setString(value);
         return jv;
     }
 

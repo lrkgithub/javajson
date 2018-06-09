@@ -6,9 +6,7 @@ public class JsonTrue extends JsonValue {
 
     private static final String TRUE = "true";
 
-    @Override
-    public String toString() {
+    public String get() {
         return TRUE;
     }
-
 }

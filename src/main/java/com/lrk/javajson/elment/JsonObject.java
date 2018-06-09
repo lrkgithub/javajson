@@ -19,8 +19,7 @@ public class JsonObject {
         map.put(jv1, jv2);
     }
 
-    @Override
-    public String toString() {
+    public String get() {
 
         //  若为空则返回空的{}
         if (this.map.isEmpty()) {
@@ -39,7 +38,7 @@ public class JsonObject {
 
             Map.Entry<JsonValue, Object> entry1 = it.next();
 
-            result.append(entry1.getKey().getValue());
+            result.append(entry1.getKey().get());
             result.append(":");
             result.append(entry1.getValue().toString());
 

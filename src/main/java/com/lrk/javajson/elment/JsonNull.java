@@ -6,8 +6,7 @@ public class JsonNull extends JsonValue {
 
     private static final String NULL = "null";
 
-    @Override
-    public String toString() {
+    public String get() {
         return NULL;
     }
 

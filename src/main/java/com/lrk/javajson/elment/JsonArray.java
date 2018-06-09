@@ -12,8 +12,7 @@ public class JsonArray {
         ll.add(element);
     }
 
-    @Override
-    public String toString() {
+    public String get() {
         StringBuilder result = new StringBuilder();
 
         result.append("[");

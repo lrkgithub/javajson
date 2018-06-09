@@ -5,6 +5,7 @@ import main.java.com.lrk.javajson.elment.JsonObject;
 import main.java.com.lrk.javajson.Main.parse.JsonToken;
 import main.java.com.lrk.javajson.Main.parse.JsonValue;
 import main.java.com.lrk.javajson.Main.ParseJson;
+import main.java.com.lrk.javajson.elment.JsonSymbol;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,18 +36,18 @@ public class SyntaxParse implements Syntax {
     private JsonObject parseObject() {
         JsonValue jvLb = getJsonValue();
         if (!jvLb.getToken().equals(JsonToken.LB)) {
-            System.out.println("must be { : " + jvLb.getValue() + "   " + jvLb.getNumber());
+            System.out.println("must be { : " + jvLb.get());
             return null;
         }
         JsonValue jvKey = getJsonValue();
         if(!jvKey.getToken().equals(JsonToken.STRING)) {
-            System.out.println("must be string : " + jvKey.getValue() + "   " + jvKey.getNumber());
+            System.out.println("must be string : " + jvKey.get());
         }
         Object jvValue = parseValue();
         JsonObject jo = new JsonObject();
         JsonValue jvRb = getJsonValue();
         if (!jvRb.getToken().equals(JsonToken.RB)) {
-            System.out.println("must be { : " + jvRb.getValue() + "   " + jvRb.getNumber());
+            System.out.println("must be { : " + jvRb.get());
             return null;
         }
         jo.add(jvKey, jvValue);
@@ -85,9 +86,9 @@ public class SyntaxParse implements Syntax {
             return jv;
         } catch (Exception e) {
             e.printStackTrace();
-            JsonValue jv = new JsonValue();
+            JsonValue jv = new JsonSymbol();
             jv.setToken(JsonToken.BADTOKEN);
-            jv.setValue("axiba");
+            jv.setSymbol("axiba");
             return jv;
         }
     }

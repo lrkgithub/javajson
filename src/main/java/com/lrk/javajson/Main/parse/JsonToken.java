@@ -4,32 +4,42 @@ public enum JsonToken {
 
 
     //    {}
-    LB,
-    RB,
+    LB('{', "{"),
+    RB('}', "}"),
 
     //    []
-    LL,
-    RL,
+    LL('[', "["),
+    RL(']', "]"),
 
-    NUMBER,
+    NUMBER(),
 
     //    错误的标识符
-    BADTOKEN,
+    BADTOKEN(),
 
     STRING,
 
     //    ，
-    COMMA,
+    COMMA(',', ","),
 
     //    ；
     SEMICOLON,
 
     TRUE,
     FALSE,
-
     NULL,
 
     //    :
-    COLON;
+    COLON(':', ":");
+
+
+    Character c;
+    String s;
+
+    JsonToken(char c, String s) {
+        this.c = c;
+        this.s = s;
+    }
+
+    JsonToken() {}
 
 }
