@@ -1,4 +1,4 @@
-package main.java.com.lrk.javajson.Main.parse;
+package main.java.com.lrk.javajson.parse;
 
 public abstract class JsonValue {
 

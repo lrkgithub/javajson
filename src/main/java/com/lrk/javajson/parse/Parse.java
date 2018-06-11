@@ -1,14 +1,12 @@
-package main.java.com.lrk.javajson.Main;
+package main.java.com.lrk.javajson.parse;
 
-import main.java.com.lrk.javajson.Main.parse.JsonToken;
-import main.java.com.lrk.javajson.Main.parse.JsonValue;
-import main.java.com.lrk.javajson.elment.JsonEmpty;
-import main.java.com.lrk.javajson.elment.JsonFalse;
-import main.java.com.lrk.javajson.elment.JsonNull;
-import main.java.com.lrk.javajson.elment.JsonNumber;
-import main.java.com.lrk.javajson.elment.JsonString;
-import main.java.com.lrk.javajson.elment.JsonSymbol;
-import main.java.com.lrk.javajson.elment.JsonTrue;
+import main.java.com.lrk.javajson.parse.elment.JsonEmpty;
+import main.java.com.lrk.javajson.parse.elment.JsonFalse;
+import main.java.com.lrk.javajson.parse.elment.JsonNull;
+import main.java.com.lrk.javajson.parse.elment.JsonNumber;
+import main.java.com.lrk.javajson.parse.elment.JsonString;
+import main.java.com.lrk.javajson.parse.elment.JsonSymbol;
+import main.java.com.lrk.javajson.parse.elment.JsonTrue;
 
 public class Parse implements ParseJson {
 

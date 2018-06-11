@@ -1,17 +1,12 @@
-package main.java.com.lrk.javajson.syntax;
+package main.java.com.lrk.javajson.parse;
 
-import main.java.com.lrk.javajson.elment.JsonArray;
-import main.java.com.lrk.javajson.elment.JsonEmpty;
-import main.java.com.lrk.javajson.elment.JsonObject;
-import main.java.com.lrk.javajson.Main.parse.JsonToken;
-import main.java.com.lrk.javajson.Main.parse.JsonValue;
-import main.java.com.lrk.javajson.Main.ParseJson;
-import main.java.com.lrk.javajson.elment.JsonSymbol;
+import main.java.com.lrk.javajson.parse.elment.JsonArray;
+import main.java.com.lrk.javajson.parse.elment.JsonEmpty;
+import main.java.com.lrk.javajson.parse.elment.JsonObject;
+import main.java.com.lrk.javajson.parse.elment.JsonSymbol;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class SyntaxParse implements Syntax {
 

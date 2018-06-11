@@ -1,7 +1,7 @@
-package main.java.com.lrk.javajson.elment;
+package main.java.com.lrk.javajson.parse.elment;
 
-import main.java.com.lrk.javajson.Main.parse.JsonToken;
-import main.java.com.lrk.javajson.Main.parse.JsonValue;
+import main.java.com.lrk.javajson.parse.JsonToken;
+import main.java.com.lrk.javajson.parse.JsonValue;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;

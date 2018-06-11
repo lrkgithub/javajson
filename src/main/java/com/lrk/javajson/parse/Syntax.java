@@ -1,8 +1,4 @@
-package main.java.com.lrk.javajson.syntax;
-
-import main.java.com.lrk.javajson.Main.parse.JsonValue;
-
-import java.util.Map;
+package main.java.com.lrk.javajson.parse;
 
 public interface Syntax {
 

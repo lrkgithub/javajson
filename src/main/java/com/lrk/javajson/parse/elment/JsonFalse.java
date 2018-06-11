@@ -1,6 +1,6 @@
-package main.java.com.lrk.javajson.elment;
+package main.java.com.lrk.javajson.parse.elment;
 
-import main.java.com.lrk.javajson.Main.parse.JsonValue;
+import main.java.com.lrk.javajson.parse.JsonValue;
 
 public class JsonFalse extends JsonValue {
 

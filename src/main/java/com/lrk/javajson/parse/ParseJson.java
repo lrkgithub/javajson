@@ -1,6 +1,4 @@
-package main.java.com.lrk.javajson.Main;
-
-import main.java.com.lrk.javajson.Main.parse.JsonValue;
+package main.java.com.lrk.javajson.parse;
 
 public interface ParseJson {
 
