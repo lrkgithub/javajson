@@ -1,13 +1,10 @@
 package main.java.com.lrk.javajson.test;
 
-import main.java.com.lrk.javajson.Main.Parse;
-import main.java.com.lrk.javajson.Main.parse.JsonValue;
-import main.java.com.lrk.javajson.syntax.Syntax;
-import main.java.com.lrk.javajson.syntax.SyntaxParse;
-import main.java.com.lrk.javajson.Main.ParseJson;
-
-import java.util.Map;
-import java.util.Scanner;
+import main.java.com.lrk.javajson.parse.Parse;
+import main.java.com.lrk.javajson.parse.JsonValue;
+import main.java.com.lrk.javajson.parse.Syntax;
+import main.java.com.lrk.javajson.parse.SyntaxParse;
+import main.java.com.lrk.javajson.parse.ParseJson;
 
 public class test {
 
