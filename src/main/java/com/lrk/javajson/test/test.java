@@ -1,16 +1,16 @@
 package main.java.com.lrk.javajson.test;
 
-import main.java.com.lrk.javajson.parse.Parse;
-import main.java.com.lrk.javajson.parse.JsonValue;
-import main.java.com.lrk.javajson.parse.Syntax;
-import main.java.com.lrk.javajson.parse.SyntaxParse;
+import main.java.com.lrk.javajson.core.Parse;
 import main.java.com.lrk.javajson.parse.ParseJson;
+import main.java.com.lrk.javajson.parse.JsonValue;
+import main.java.com.lrk.javajson.core.Syntax;
+import main.java.com.lrk.javajson.parse.SyntaxParse;
 
 public class test {
 
     public static void main(String[] args) {
-        ParseJson parse = new Parse();
-        Syntax syntax = new SyntaxParse(parse);
+        Parse parseJson = new ParseJson();
+        Syntax syntax = new SyntaxParse(parseJson);
 
         String s = "{\n" +
                 "\t\"code\":0,\n" +

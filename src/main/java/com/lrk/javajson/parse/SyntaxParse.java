@@ -1,5 +1,7 @@
 package main.java.com.lrk.javajson.parse;
 
+import main.java.com.lrk.javajson.core.Parse;
+import main.java.com.lrk.javajson.core.Syntax;
 import main.java.com.lrk.javajson.parse.elment.JsonArray;
 import main.java.com.lrk.javajson.parse.elment.JsonEmpty;
 import main.java.com.lrk.javajson.parse.elment.JsonObject;
@@ -10,9 +12,9 @@ import java.util.List;
 
 public class SyntaxParse implements Syntax {
 
-    private ParseJson parse;
+    private Parse parse;
 
-    public SyntaxParse(ParseJson parse) {
+    public SyntaxParse(Parse parse) {
         this.parse = parse;
     }
 

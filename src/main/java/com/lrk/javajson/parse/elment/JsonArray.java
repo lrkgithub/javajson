@@ -8,9 +8,9 @@ import java.util.List;
 
 public class JsonArray extends JsonValue {
 
-    List<Object> ll = new LinkedList<Object>();
+    List<JsonValue> ll = new LinkedList<JsonValue>();
 
-    public void add(Object element) {
+    public void add(JsonValue element) {
         ll.add(element);
     }
 
@@ -18,10 +18,10 @@ public class JsonArray extends JsonValue {
         StringBuilder result = new StringBuilder();
 
         result.append("[");
-        Iterator it = ll.iterator();
+        Iterator<JsonValue> it = ll.iterator();
 
         while(it.hasNext()) {
-            result.append(it.next().toString());
+            result.append(it.next().get());
             result.append(", ");
         }
 
