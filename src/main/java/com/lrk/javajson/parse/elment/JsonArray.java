@@ -8,20 +8,23 @@ import java.util.List;
 
 public class JsonArray extends JsonValue {
 
-    List<JsonValue> ll = new LinkedList<JsonValue>();
+    private List<JsonValue> ll = new LinkedList<JsonValue>();
 
     public void add(JsonValue element) {
         ll.add(element);
+    }
+
+    public List<JsonValue> getList() {
+        return this.ll;
     }
 
     public String get() {
         StringBuilder result = new StringBuilder();
 
         result.append("[");
-        Iterator<JsonValue> it = ll.iterator();
 
-        while(it.hasNext()) {
-            result.append(it.next().get());
+        for (JsonValue jsonValue : ll) {
+            result.append(jsonValue.get());
             result.append(", ");
         }
 

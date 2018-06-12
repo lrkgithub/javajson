@@ -1,10 +1,14 @@
 package main.java.com.lrk.javajson.parse;
 
+import main.java.com.lrk.javajson.annotation.Ignore;
 import main.java.com.lrk.javajson.annotation.Property;
 import main.java.com.lrk.javajson.core.JsonMapper;
 import main.java.com.lrk.javajson.core.Maker;
+import main.java.com.lrk.javajson.core.Parse;
+import main.java.com.lrk.javajson.core.Syntax;
 import main.java.com.lrk.javajson.parse.elment.JsonArray;
 import main.java.com.lrk.javajson.parse.elment.JsonFalse;
+import main.java.com.lrk.javajson.parse.elment.JsonNull;
 import main.java.com.lrk.javajson.parse.elment.JsonNumber;
 import main.java.com.lrk.javajson.parse.elment.JsonObject;
 import main.java.com.lrk.javajson.parse.elment.JsonString;
@@ -28,9 +32,16 @@ public class JsonMaker implements Maker {
 
             mapper.setMainValue(jv);
 
-        }
+        } else if (cls.getClass().getClassLoader().getClass() == this.getClass().getClassLoader().getClass()) {
 
-        return mapper.get();
+            /* 这里怎么写比较好 */
+//        if (cls.getClass().getClassLoader().getClass() == this.getClass().getClassLoader().getClass()) {
+
+            JsonValue jv = toJsonSingle(object);
+
+            mapper.setMainValue(jv);
+        }
+        return mapper.toJson();
     }
 
     private JsonValue toJsonArray(List list) throws IllegalAccessException {
@@ -38,7 +49,12 @@ public class JsonMaker implements Maker {
         JsonArray jsonArray = new JsonArray();
 
         for (Object obj : list) {
-            jsonArray.add(toJsonSingle(obj));
+
+            JsonValue jv = toJsonSingle(obj);
+
+            if (null != jv) {
+                jsonArray.add(jv);
+            }
         }
 
         return jsonArray;
@@ -59,10 +75,23 @@ public class JsonMaker implements Maker {
 
         for (Field field : fields) {
 
+            Ignore ignore = field.getAnnotation(Ignore.class);
+
+            if (null != ignore) {
+                continue;
+            }
+
             Property property = field.getAnnotation(Property.class);
 
             String propertyName;
-            String alliesName = property.value();
+            String alliesName;
+
+            if (null != property) {
+                alliesName = property.value();
+            } else {
+                alliesName = "";
+            }
+
 
             if ("".equals(alliesName)) {
                 propertyName = field.getName();
@@ -75,6 +104,15 @@ public class JsonMaker implements Maker {
 
             Class<?> fieldType = field.getType();
 
+            field.setAccessible(true);
+
+            if (null == field.get(object)) {
+
+                jsonObject.add(jvKey, new JsonNull());
+
+                continue;
+            }
+
             if (fieldType == String.class) {
 
                 JsonString jsonString = new JsonString();
@@ -82,7 +120,10 @@ public class JsonMaker implements Maker {
 
                 jsonObject.add(jvKey, jsonString);
 
-            } else if (fieldType == Boolean.class || fieldType == boolean.class) {
+                continue;
+            }
+
+            if (fieldType == Boolean.class || fieldType == boolean.class) {
 
                 boolean bool =  (Boolean)field.get(object);
 
@@ -96,7 +137,10 @@ public class JsonMaker implements Maker {
 
                 jsonObject.add(jvKey, jvValue);
 
-            } else if (Number.class.isAssignableFrom(fieldType)
+                continue;
+            }
+
+            if (Number.class.isAssignableFrom(fieldType)
                     || fieldType == double.class
                     || fieldType == long.class
                     || fieldType == short.class
@@ -109,9 +153,35 @@ public class JsonMaker implements Maker {
 
                 jsonObject.add(jvKey, jsonNumber);
 
+                continue;
+            }
+
+            if(List.class.isAssignableFrom(fieldType)) {
+
+                JsonValue jvValue = toJsonArray((List)field.get(object));
+
+                jsonObject.add(jvKey, jvValue);
             }
 
         }
-return null;
+
+        return jsonObject;
+    }
+
+
+    public Object fromJson(String jsonString, Class clazz) throws Exception {
+
+        JsonMapper mapper = new JsonMapper();
+
+        Parse parseJson = new ParseJson();
+        Syntax syntaxParse = new SyntaxParse(parseJson);
+
+        syntaxParse.setStart(jsonString);
+
+        JsonValue jv = syntaxParse.syntaxJson();
+
+        mapper.setMainValue(jv);
+
+        return mapper.fromJson(clazz);
     }
 }

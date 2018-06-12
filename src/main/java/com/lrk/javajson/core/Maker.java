@@ -4,4 +4,5 @@ public interface Maker {
 
     String toJson(Object object) throws IllegalAccessException;
 
+    Object fromJson(String jsonString, Class clazz) throws Exception;
 }
