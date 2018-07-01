@@ -4,9 +4,9 @@ import main.java.com.lrk.javajson.parse.JsonValue;
 
 public class JsonNull extends JsonValue {
 
-    private static final String NULL = "null";
+    private static final Object NULL = null;
 
-    public String get() {
+    public Object get() {
         return NULL;
     }
 

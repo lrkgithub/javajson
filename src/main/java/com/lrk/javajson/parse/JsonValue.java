@@ -12,7 +12,7 @@ public abstract class JsonValue {
         return this.token;
     }
 
-    public abstract String get();
+    public abstract Object get();
 
 //    存放String的方法
     public void setString(String s) {}
@@ -29,7 +29,7 @@ public abstract class JsonValue {
     @Override
     public String toString() {
 
-        return get();
+        return get() + "";
 
     }
 

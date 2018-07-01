@@ -54,4 +54,8 @@ public class JsonObject extends JsonValue {
         return result.toString();
     }
 
+    public Map<JsonValue, JsonValue> getMap() {
+        return this.map;
+    }
+
 }

@@ -15,11 +15,23 @@ import main.java.com.lrk.javajson.parse.elment.JsonString;
 import main.java.com.lrk.javajson.parse.elment.JsonTrue;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class JsonMaker implements Maker {
 
     private Class clazz;
+
+    private JsonValue jsonValue;
+
+
+    public void setMainValue(JsonValue jsonValue) {
+        this.jsonValue = jsonValue;
+    }
 
     public String toJson(Object object) throws IllegalAccessException {
 
@@ -30,7 +42,7 @@ public class JsonMaker implements Maker {
 
             JsonValue jv = toJsonArray((List)object);
 
-            mapper.setMainValue(jv);
+            this.setMainValue(jv);
 
         } else if (cls.getClass().getClassLoader().getClass() == this.getClass().getClassLoader().getClass()) {
 
@@ -39,7 +51,7 @@ public class JsonMaker implements Maker {
 
             JsonValue jv = toJsonSingle(object);
 
-            mapper.setMainValue(jv);
+            this.setMainValue(jv);
         }
         return mapper.toJson();
     }
@@ -168,10 +180,7 @@ public class JsonMaker implements Maker {
         return jsonObject;
     }
 
-
     public Object fromJson(String jsonString, Class clazz) throws Exception {
-
-        JsonMapper mapper = new JsonMapper();
 
         Parse parseJson = new ParseJson();
         Syntax syntaxParse = new SyntaxParse(parseJson);
@@ -180,8 +189,182 @@ public class JsonMaker implements Maker {
 
         JsonValue jv = syntaxParse.syntaxJson();
 
-        mapper.setMainValue(jv);
+        this.setMainValue(jv);
 
-        return mapper.fromJson(clazz);
+        return fromJson(clazz);
+    }
+
+    private Object fromJson(Class clazz) {
+
+        if (this.jsonValue.getClass() == JsonArray.class) {
+
+            ArrayList<Object> arrayList = new ArrayList<Object>();
+
+            List<JsonValue> jsonValueList = ((JsonArray)jsonValue).getList();
+
+            for (JsonValue jv : jsonValueList) {
+
+                try {
+                    arrayList.add(fromSingleJson(jv, clazz));
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                }
+            }
+            return arrayList;
+        }
+
+        if (clazz.getClassLoader() == this.getClass().getClassLoader()) {
+
+            try {
+                return fromSingleJson(this.jsonValue, clazz);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        return null;
+    }
+
+    private Object fromSingleJson(JsonValue jv, Class clazz) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+
+        if (jv instanceof JsonObject) {
+
+            Field[] fields = clazz.getDeclaredFields();
+
+            Map<String, Field> alliesNames = prepareFileds(fields);
+
+            Iterator<Map.Entry<String, Field>> it1 = alliesNames.entrySet().iterator();
+
+            Iterator<Map.Entry<JsonValue, JsonValue>> it2 = ((JsonObject)jv).getMap().entrySet().iterator();
+
+            Object obj = clazz.getConstructors()[0].newInstance();
+
+            while (it1.hasNext()) {
+
+                Map.Entry<String, Field> entryC = it1.next();
+
+                while (it2.hasNext()) {
+
+                    Map.Entry<JsonValue, JsonValue> entryJ = it2.next();
+
+                    if (entryC.getKey().equals(((JsonString)(entryJ.getKey())).get())) {
+
+                        Field target = entryC.getValue();
+
+                        target.setAccessible(true);
+
+                        JsonValue value = entryJ.getValue();
+
+                        Class targetClass = target.getType();
+
+                        try {
+                            target.set(obj, transForObj(targetClass, value));
+                        } catch (IllegalArgumentException e) {
+                            target.set(obj, null);
+                        }
+
+                    }
+
+                }
+
+            }
+        }
+
+        return null;
+    }
+
+    private Map<String, Field> prepareFileds(Field[] fields) {
+
+        Map<String, Field> map = new HashMap<String, Field>();
+
+        for (Field field : fields) {
+
+            Property property = field.getAnnotation(Property.class);
+
+            String name;
+
+            if (null != property) {
+                name = property.value();
+            } else {
+                name = "";
+            }
+
+            if ("".equals(name)) {
+                name = field.getName();
+            }
+
+            map.put(name, field);
+        }
+
+        return map;
+    }
+
+    private Object transForObj(Class targetClass, JsonValue targetValue) {
+
+        if (String.class == targetClass) {
+
+            if (JsonString.class == targetValue.getClass()) {
+                return targetValue.get();
+            } else {
+                return targetValue.get() + "";
+            }
+        }
+
+        if (JsonString.class == targetValue.getClass()) {
+
+            if (String.class == targetClass) {
+
+                return targetValue.get();
+
+            }
+
+            String value = (String)targetValue.get();
+
+            if (Double.class == targetClass) {
+
+                return Double.parseDouble(value);
+
+            }
+
+            if (Long.class == targetClass) {
+
+                return Long.parseLong(value);
+
+            }
+
+            if (Integer.class == targetClass) {
+
+                return Integer.parseInt(value);
+
+            }
+
+            if (Short.class == targetClass) {
+
+                return Short.parseShort(value);
+
+            }
+
+            if (Byte.class == targetClass) {
+
+                return Byte.parseByte(value);
+
+            }
+
+            if (Float.class == targetClass) {
+
+                return Float.parseFloat(value);
+
+            }
+        }
+        return null;
     }
 }

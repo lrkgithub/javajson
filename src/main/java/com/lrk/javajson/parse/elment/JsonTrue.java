@@ -4,9 +4,9 @@ import main.java.com.lrk.javajson.parse.JsonValue;
 
 public class JsonTrue extends JsonValue {
 
-    private static final String TRUE = "true";
+    private static final Boolean TRUE = true;
 
-    public String get() {
+    public Boolean get() {
         return TRUE;
     }
 }

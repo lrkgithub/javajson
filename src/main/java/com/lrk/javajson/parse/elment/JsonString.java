@@ -10,7 +10,6 @@ public class JsonString extends JsonValue {
         this.jsonString = jsonString;
     }
 
-
     public String get() {
         return this.jsonString;
     }
