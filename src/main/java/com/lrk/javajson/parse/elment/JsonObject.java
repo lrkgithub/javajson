@@ -10,9 +10,9 @@ import java.util.Set;
 
 public class JsonObject extends JsonValue {
 
-    Map<JsonValue, JsonValue> map = new LinkedHashMap<JsonValue, JsonValue>();
+    Map<JsonString, JsonValue> map = new LinkedHashMap<JsonString, JsonValue>();
 
-    public void add(JsonValue jv1, JsonValue jv2) {
+    public void add(JsonString jv1, JsonValue jv2) {
         if(!jv1.getToken().equals(JsonToken.STRING)) {
             return;
         }
@@ -30,13 +30,13 @@ public class JsonObject extends JsonValue {
         result.append("{");
 
 
-        Set<Map.Entry<JsonValue, JsonValue>> entry = map.entrySet();
-        Iterator<Map.Entry<JsonValue, JsonValue>> it = entry.iterator();
+        Set<Map.Entry<JsonString, JsonValue>> entry = map.entrySet();
+        Iterator<Map.Entry<JsonString, JsonValue>> it = entry.iterator();
 
         //  此处至少有一个值
         while (true) {
 
-            Map.Entry<JsonValue, JsonValue> entry1 = it.next();
+            Map.Entry<JsonString, JsonValue> entry1 = it.next();
 
             result.append(entry1.getKey().get());
             result.append(":");
@@ -54,7 +54,7 @@ public class JsonObject extends JsonValue {
         return result.toString();
     }
 
-    public Map<JsonValue, JsonValue> getMap() {
+    public Map<JsonString, JsonValue> getMap() {
         return this.map;
     }
 

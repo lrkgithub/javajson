@@ -5,6 +5,7 @@ import main.java.com.lrk.javajson.core.Syntax;
 import main.java.com.lrk.javajson.parse.elment.JsonArray;
 import main.java.com.lrk.javajson.parse.elment.JsonEmpty;
 import main.java.com.lrk.javajson.parse.elment.JsonObject;
+import main.java.com.lrk.javajson.parse.elment.JsonString;
 import main.java.com.lrk.javajson.parse.elment.JsonSymbol;
 
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ public class SyntaxParse implements Syntax {
         List<Entry> entries = parseEntry();
 
         for (Entry entry : entries) {
-            jo.add(entry.getKey(), entry.getValue());
+            jo.add((JsonString)entry.getKey(), entry.getValue());
         }
 
         JsonValue jvRb = getJsonValue();
@@ -85,12 +86,12 @@ public class SyntaxParse implements Syntax {
 
         JsonValue jvValue = syntaxJson();
 
-        entries.add(new Entry(jvKey, jvValue));
+        entries.add(new Entry((JsonString)jvKey, jvValue));
 
         while (this.parse.isComma()) {
 
             JsonValue jvComma = getJsonValue();
-            if(!jvKey.getToken().equals(JsonToken.COMMA)) {
+            if(!jvComma.getToken().equals(JsonToken.COMMA)) {
                 System.out.println("must be comma : " + jvComma.get());
             }
 
@@ -106,7 +107,7 @@ public class SyntaxParse implements Syntax {
             }
 
             jvValue = syntaxJson();
-            entries.add(new Entry(jvKey, jvValue));
+            entries.add(new Entry((JsonString)jvKey, jvValue));
         }
         return entries;
     }
@@ -164,15 +165,15 @@ public class SyntaxParse implements Syntax {
 
     class Entry {
 
-        private JsonValue key;
+        private JsonString key;
         private JsonValue value;
 
-        Entry(JsonValue key, JsonValue value) {
+        Entry(JsonString key, JsonValue value) {
             this.key = key;
             this.value = value;
         }
 
-        JsonValue getKey() {
+        JsonString getKey() {
             return this.key;
         }
 

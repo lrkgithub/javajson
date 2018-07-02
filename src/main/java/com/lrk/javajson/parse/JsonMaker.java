@@ -189,14 +189,12 @@ public class JsonMaker implements Maker {
 
         JsonValue jv = syntaxParse.syntaxJson();
 
-        this.setMainValue(jv);
-
-        return fromJson(clazz);
+        return transJson(jv, clazz);
     }
 
-    private Object fromJson(Class clazz) {
+    private Object transJson(JsonValue jasonValue, Class clazz) {
 
-        if (this.jsonValue.getClass() == JsonArray.class) {
+        if (jasonValue.getClass() == JsonArray.class) {
 
             ArrayList<Object> arrayList = new ArrayList<Object>();
 
@@ -220,7 +218,7 @@ public class JsonMaker implements Maker {
         if (clazz.getClassLoader() == this.getClass().getClassLoader()) {
 
             try {
-                return fromSingleJson(this.jsonValue, clazz);
+                return fromSingleJson(jasonValue, clazz);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             } catch (InvocationTargetException e) {
@@ -244,7 +242,7 @@ public class JsonMaker implements Maker {
 
             Iterator<Map.Entry<String, Field>> it1 = alliesNames.entrySet().iterator();
 
-            Iterator<Map.Entry<JsonValue, JsonValue>> it2 = ((JsonObject)jv).getMap().entrySet().iterator();
+            Iterator<Map.Entry<JsonString, JsonValue>> it2 = ((JsonObject)jv).getMap().entrySet().iterator();
 
             Object obj = clazz.getConstructors()[0].newInstance();
 
@@ -254,9 +252,9 @@ public class JsonMaker implements Maker {
 
                 while (it2.hasNext()) {
 
-                    Map.Entry<JsonValue, JsonValue> entryJ = it2.next();
+                    Map.Entry<JsonString, JsonValue> entryJ = it2.next();
 
-                    if (entryC.getKey().equals(((JsonString)(entryJ.getKey())).get())) {
+                    if (entryC.getKey().equals(((entryJ.getKey())).get())) {
 
                         Field target = entryC.getValue();
 
@@ -267,7 +265,7 @@ public class JsonMaker implements Maker {
                         Class targetClass = target.getType();
 
                         try {
-                            target.set(obj, transForObj(targetClass, value));
+                            target.set(obj, transForObj(value, targetClass));
                         } catch (IllegalArgumentException e) {
                             target.set(obj, null);
                         }
@@ -308,63 +306,173 @@ public class JsonMaker implements Maker {
         return map;
     }
 
-    private Object transForObj(Class targetClass, JsonValue targetValue) {
+    private Object transForObj(JsonValue targetValue, Class targetClass) {
+
+        if (JsonString.class == targetValue.getClass()) {
+            return transJsonString(((JsonString)targetValue).get(), targetClass);
+        }
+
+        if (JsonTrue.class == targetValue.getClass()) {
+            return transJsonTrue(targetClass);
+        }
+
+        if (JsonFalse.class == targetValue.getClass()) {
+             return transJsonFalse(targetClass);
+        }
+
+        if (JsonNull.class == targetValue.getClass()) {
+            return transJsonNull();
+        }
+
+        if (JsonNumber.class == targetValue.getClass()) {
+            return transJsonNumber(((JsonNumber)targetValue).get(), targetClass);
+        }
+
+        if (JsonArray.class == targetValue.getClass()) {
+            return transJson(targetValue, targetClass);
+        }
+        return null;
+    }
+
+    private Object transJsonString(String value, Class targetClass) {
 
         if (String.class == targetClass) {
 
-            if (JsonString.class == targetValue.getClass()) {
-                return targetValue.get();
-            } else {
-                return targetValue.get() + "";
+            return value;
+
+        }
+
+
+        if (Double.class == targetClass || double.class == targetClass) {
+
+            return Double.parseDouble(value);
+
+        }
+
+        if (Long.class == targetClass || long.class == targetClass) {
+
+            return Long.parseLong(value);
+
+        }
+
+        if (Integer.class == targetClass || int.class == targetClass) {
+
+            return Integer.parseInt(value);
+
+        }
+
+        if (Short.class == targetClass || short.class == targetClass) {
+
+            return Short.parseShort(value);
+
+        }
+
+        if (Byte.class == targetClass || byte.class == targetClass) {
+
+            return Byte.parseByte(value);
+
+        }
+
+        if (Float.class == targetClass || float.class == targetClass) {
+
+            return Float.parseFloat(value);
+
+        }
+
+        if (Character.class == targetClass) {
+            if (1 == value.length()) {
+                return value.toCharArray()[0];
             }
         }
 
-        if (JsonString.class == targetValue.getClass()) {
+        if (Boolean.class == targetClass) {
 
-            if (String.class == targetClass) {
-
-                return targetValue.get();
-
+            if ("true".equals(value)) {
+                return true;
+            } else if ("false".equals(value)) {
+                return false;
             }
 
-            String value = (String)targetValue.get();
-
-            if (Double.class == targetClass) {
-
-                return Double.parseDouble(value);
-
-            }
-
-            if (Long.class == targetClass) {
-
-                return Long.parseLong(value);
-
-            }
-
-            if (Integer.class == targetClass) {
-
-                return Integer.parseInt(value);
-
-            }
-
-            if (Short.class == targetClass) {
-
-                return Short.parseShort(value);
-
-            }
-
-            if (Byte.class == targetClass) {
-
-                return Byte.parseByte(value);
-
-            }
-
-            if (Float.class == targetClass) {
-
-                return Float.parseFloat(value);
-
-            }
         }
+        return null;
+    }
+
+    private Object transJsonTrue(Class targetClass) {
+
+        if (Boolean.class == targetClass || boolean.class == targetClass) {
+            return true;
+        }
+
+        if (String.class == targetClass) {
+            return "true";
+        }
+
+        return null;
+    }
+
+    private Object transJsonFalse(Class targetClass) {
+
+        if (Boolean.class == targetClass || boolean.class == targetClass) {
+            return false;
+        }
+
+        if (String.class == targetClass) {
+            return "false";
+        }
+
+        return null;
+    }
+
+    private Object transJsonNull() {
+
+        return null;
+
+    }
+
+    private Object transJsonNumber(String value, Class targetClass) {
+
+        if (String.class == targetClass) {
+
+            return value;
+
+        }
+
+        if (Double.class == targetClass || double.class == targetClass) {
+
+            return Double.parseDouble(value);
+
+        }
+
+        if (Long.class == targetClass || long.class == targetClass) {
+
+            return Long.parseLong(value);
+
+        }
+
+        if (Integer.class == targetClass || int.class == targetClass) {
+
+            return Integer.parseInt(value);
+
+        }
+
+        if (Short.class == targetClass || short.class == targetClass) {
+
+            return Short.parseShort(value);
+
+        }
+
+        if (Byte.class == targetClass || byte.class == targetClass) {
+
+            return Byte.parseByte(value);
+
+        }
+
+        if (Float.class == targetClass || float.class == targetClass) {
+
+            return Float.parseFloat(value);
+
+        }
+
         return null;
     }
 }
