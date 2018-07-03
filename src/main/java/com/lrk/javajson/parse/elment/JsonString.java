@@ -11,6 +11,10 @@ public class JsonString extends JsonValue {
     }
 
     public String get() {
+        return "\"" + this.jsonString + "\"";
+    }
+
+    public String getString() {
         return this.jsonString;
     }
 }

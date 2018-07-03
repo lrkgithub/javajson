@@ -24,36 +24,27 @@ import java.util.Map;
 
 public class JsonMaker implements Maker {
 
-    private Class clazz;
-
-    private JsonValue jsonValue;
-
-
-    public void setMainValue(JsonValue jsonValue) {
-        this.jsonValue = jsonValue;
-    }
-
     public String toJson(Object object) throws IllegalAccessException {
 
-        JsonMapper mapper = new JsonMapper();
+//        JsonMapper mapper = new JsonMapper();
         Class<?> cls = object.getClass();
 
         if (List.class.isAssignableFrom(cls)) {
 
             JsonValue jv = toJsonArray((List)object);
 
-            this.setMainValue(jv);
+            return jv.get().toString();
 
-        } else if (cls.getClass().getClassLoader().getClass() == this.getClass().getClassLoader().getClass()) {
-
+        } else {
             /* 这里怎么写比较好 */
 //        if (cls.getClass().getClassLoader().getClass() == this.getClass().getClassLoader().getClass()) {
 
             JsonValue jv = toJsonSingle(object);
 
-            this.setMainValue(jv);
+            return jv.get().toString();
+
         }
-        return mapper.toJson();
+//        return mapper.toJson();
     }
 
     private JsonValue toJsonArray(List list) throws IllegalAccessException {
@@ -83,7 +74,7 @@ public class JsonMaker implements Maker {
 
         }
 
-        Field[] fields = cls.getFields();
+        Field[] fields = cls.getDeclaredFields();
 
         for (Field field : fields) {
 
@@ -111,7 +102,7 @@ public class JsonMaker implements Maker {
                 propertyName = alliesName;
             }
 
-            JsonString jvKey = new JsonString();
+            JsonString jvKey = ElementMaker.jsonString();
             jvKey.setString(propertyName);
 
             Class<?> fieldType = field.getType();
@@ -128,6 +119,8 @@ public class JsonMaker implements Maker {
             if (fieldType == String.class) {
 
                 JsonString jsonString = new JsonString();
+
+                field.setAccessible(true);
                 jsonString.setString((String) field.get(object));
 
                 jsonObject.add(jvKey, jsonString);
@@ -192,9 +185,9 @@ public class JsonMaker implements Maker {
         return transJson(jv, clazz);
     }
 
-    private Object transJson(JsonValue jasonValue, Class clazz) {
+    private Object transJson(JsonValue jsonValue, Class clazz) {
 
-        if (jasonValue.getClass() == JsonArray.class) {
+        if (jsonValue.getClass() == JsonArray.class) {
 
             ArrayList<Object> arrayList = new ArrayList<Object>();
 
@@ -218,7 +211,7 @@ public class JsonMaker implements Maker {
         if (clazz.getClassLoader() == this.getClass().getClassLoader()) {
 
             try {
-                return fromSingleJson(jasonValue, clazz);
+                return fromSingleJson(jsonValue, clazz);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             } catch (InvocationTargetException e) {
@@ -242,7 +235,7 @@ public class JsonMaker implements Maker {
 
             Iterator<Map.Entry<String, Field>> it1 = alliesNames.entrySet().iterator();
 
-            Iterator<Map.Entry<JsonString, JsonValue>> it2 = ((JsonObject)jv).getMap().entrySet().iterator();
+
 
             Object obj = clazz.getConstructors()[0].newInstance();
 
@@ -250,11 +243,14 @@ public class JsonMaker implements Maker {
 
                 Map.Entry<String, Field> entryC = it1.next();
 
+                Iterator<Map.Entry<JsonString, JsonValue>> it2 = ((JsonObject)jv).getMap().entrySet().iterator();
+
                 while (it2.hasNext()) {
 
                     Map.Entry<JsonString, JsonValue> entryJ = it2.next();
 
-                    if (entryC.getKey().equals(((entryJ.getKey())).get())) {
+
+                    if (entryC.getKey().equals((entryJ.getKey()).getString().replaceAll("\"", ""))) {
 
                         Field target = entryC.getValue();
 
@@ -275,6 +271,7 @@ public class JsonMaker implements Maker {
                 }
 
             }
+            return obj;
         }
 
         return null;

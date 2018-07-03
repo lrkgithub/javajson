@@ -21,15 +21,16 @@ public enum JsonToken {
     //    ，
     COMMA(',', ","),
 
-    //    ；
-    SEMICOLON,
-
     TRUE,
     FALSE,
     NULL,
 
     //    :
-    COLON(':', ":");
+    COLON(':', ":"),
+
+    ARRAY(),
+
+    OBJECT();
 
 
     Character c;
