@@ -4,13 +4,13 @@ import main.java.com.lrk.javajson.parse.elment.JsonArray;
 import main.java.com.lrk.javajson.parse.elment.JsonFalse;
 import main.java.com.lrk.javajson.parse.elment.JsonNull;
 import main.java.com.lrk.javajson.parse.elment.JsonNumber;
-import main.java.com.lrk.javajson.parse.elment.JsonObject;
+import main.java.com.lrk.javajson.parse.elment.JsonMap;
 import main.java.com.lrk.javajson.parse.elment.JsonString;
 import main.java.com.lrk.javajson.parse.elment.JsonTrue;
 
 public class ElementMaker {
 
-    public static JsonString jsonString() {
+    static JsonString jsonString() {
 
         JsonString js = new JsonString();
         js.setToken(JsonToken.STRING);
@@ -85,9 +85,9 @@ public class ElementMaker {
         return jn;
     }
 
-    public static JsonObject jsonObject() {
+    public static JsonMap jsonObject() {
 
-        JsonObject jo = new JsonObject();
+        JsonMap jo = new JsonMap();
         jo.setToken(JsonToken.OBJECT);
 
         return jo;

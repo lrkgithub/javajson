@@ -8,9 +8,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class JsonObject extends JsonValue {
+public class JsonMap extends JsonValue {
 
-    Map<JsonString, JsonValue> map = new LinkedHashMap<JsonString, JsonValue>();
+    private Map<JsonString, JsonValue> map = new LinkedHashMap<JsonString, JsonValue>();
 
     public void add(JsonString jv1, JsonValue jv2) {
         if(!jv1.getToken().equals(JsonToken.STRING)) {

@@ -2,9 +2,10 @@ package main.java.com.lrk.javajson.parse;
 
 import main.java.com.lrk.javajson.core.Parse;
 import main.java.com.lrk.javajson.core.Syntax;
+import main.java.com.lrk.javajson.log.Log;
 import main.java.com.lrk.javajson.parse.elment.JsonArray;
 import main.java.com.lrk.javajson.parse.elment.JsonEmpty;
-import main.java.com.lrk.javajson.parse.elment.JsonObject;
+import main.java.com.lrk.javajson.parse.elment.JsonMap;
 import main.java.com.lrk.javajson.parse.elment.JsonString;
 import main.java.com.lrk.javajson.parse.elment.JsonSymbol;
 
@@ -39,25 +40,25 @@ public class SyntaxParse implements Syntax {
         return jsonValue;
     }
 
-    private JsonObject parseObject() {
+    private JsonMap parseObject() {
 
-        JsonObject jo = new JsonObject();
+        JsonMap jo = new JsonMap();
 
         JsonValue jvLb = getJsonValue();
         if (!jvLb.getToken().equals(JsonToken.LB)) {
-            System.out.println("must be LB : " + jvLb.get());
+            Log.log("must be LB : " + jvLb.get());
             return null;
         }
 
         List<Entry> entries = parseEntry();
 
         for (Entry entry : entries) {
-            jo.add((JsonString)entry.getKey(), entry.getValue());
+            jo.add(entry.getKey(), entry.getValue());
         }
 
         JsonValue jvRb = getJsonValue();
         if (!jvRb.getToken().equals(JsonToken.RB)) {
-            System.out.println("must be RB : " + jvRb.get());
+            Log.log("must be RB : " + jvRb.get());
             return null;
         }
 
@@ -75,13 +76,13 @@ public class SyntaxParse implements Syntax {
 
         JsonValue jvKey = getJsonValue();
         if(!jvKey.getToken().equals(JsonToken.STRING)) {
-            System.out.println("must be string : " + jvKey.get());
+            Log.log("must be string : " + jvKey.get());
         }
 
         JsonValue jvColon = syntaxJson();
 
         if (!jvColon.getToken().equals(JsonToken.COLON)) {
-            System.out.println("must be colon : " + jvColon.get());
+            Log.log("must be colon : " + jvColon.get());
         }
 
         JsonValue jvValue = syntaxJson();
@@ -92,18 +93,18 @@ public class SyntaxParse implements Syntax {
 
             JsonValue jvComma = getJsonValue();
             if(!jvComma.getToken().equals(JsonToken.COMMA)) {
-                System.out.println("must be comma : " + jvComma.get());
+                Log.log("must be comma : " + jvComma.get());
             }
 
             jvKey = getJsonValue();
             if(!jvKey.getToken().equals(JsonToken.STRING)) {
-                System.out.println("must be string : " + jvKey.get());
+                Log.log("must be string : " + jvKey.get());
             }
 
             jvColon = syntaxJson();
 
             if (!jvColon.getToken().equals(JsonToken.COLON)) {
-                System.out.println("must be colon : " + jvColon.get());
+                Log.log("must be colon : " + jvColon.get());
             }
 
             jvValue = syntaxJson();
@@ -116,7 +117,7 @@ public class SyntaxParse implements Syntax {
 
         JsonValue jvLL = getJsonValue();
         if(!jvLL.getToken().equals(JsonToken.LL)) {
-            System.out.println("must be LL : " + jvLL.get());
+            Log.log("must be LL : " + jvLL.get());
         }
 
         JsonArray jvarrs = new JsonArray();
@@ -132,7 +133,7 @@ public class SyntaxParse implements Syntax {
 
             JsonValue jvComma = getJsonValue();
             if(!jvComma.getToken().equals(JsonToken.COMMA)) {
-                System.out.println("must be COMMA : " + jvComma.get());
+                Log.log("must be COMMA : " + jvComma.get());
             }
 
             jvEle = syntaxJson();
@@ -141,7 +142,7 @@ public class SyntaxParse implements Syntax {
 
         JsonValue jvRL = getJsonValue();
         if(!jvRL.getToken().equals(JsonToken.RL)) {
-            System.out.println("must be RL : " + jvRL.get());
+            Log.log("must be RL : " + jvRL.get());
         }
 
         return jvarrs;

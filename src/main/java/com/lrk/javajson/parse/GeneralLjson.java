@@ -2,15 +2,14 @@ package main.java.com.lrk.javajson.parse;
 
 import main.java.com.lrk.javajson.annotation.Ignore;
 import main.java.com.lrk.javajson.annotation.Property;
-import main.java.com.lrk.javajson.core.JsonMapper;
-import main.java.com.lrk.javajson.core.Maker;
+import main.java.com.lrk.javajson.core.Ljson;
 import main.java.com.lrk.javajson.core.Parse;
 import main.java.com.lrk.javajson.core.Syntax;
 import main.java.com.lrk.javajson.parse.elment.JsonArray;
 import main.java.com.lrk.javajson.parse.elment.JsonFalse;
 import main.java.com.lrk.javajson.parse.elment.JsonNull;
 import main.java.com.lrk.javajson.parse.elment.JsonNumber;
-import main.java.com.lrk.javajson.parse.elment.JsonObject;
+import main.java.com.lrk.javajson.parse.elment.JsonMap;
 import main.java.com.lrk.javajson.parse.elment.JsonString;
 import main.java.com.lrk.javajson.parse.elment.JsonTrue;
 
@@ -21,8 +20,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-public class JsonMaker implements Maker {
+public class GeneralLjson implements Ljson {
 
     public String toJson(Object object) throws IllegalAccessException {
 
@@ -47,6 +47,18 @@ public class JsonMaker implements Maker {
 //        return mapper.toJson();
     }
 
+    public Object fromJson(String jsonString, Class clazz) throws Exception {
+
+        Parse parseJson = new ParseJson();
+        Syntax syntaxParse = new SyntaxParse(parseJson);
+
+        syntaxParse.setStart(jsonString);
+
+        JsonValue jv = syntaxParse.syntaxJson();
+
+        return transJson(jv, clazz);
+    }
+
     private JsonValue toJsonArray(List list) throws IllegalAccessException {
 
         JsonArray jsonArray = new JsonArray();
@@ -65,7 +77,7 @@ public class JsonMaker implements Maker {
 
     private JsonValue toJsonSingle(Object object) throws IllegalAccessException {
 
-        JsonObject jsonObject = new JsonObject();
+        JsonMap jsonMap = new JsonMap();
         Class<?> cls = object.getClass();
 
         if (List.class.isAssignableFrom(cls)) {
@@ -111,7 +123,7 @@ public class JsonMaker implements Maker {
 
             if (null == field.get(object)) {
 
-                jsonObject.add(jvKey, new JsonNull());
+                jsonMap.add(jvKey, new JsonNull());
 
                 continue;
             }
@@ -123,7 +135,7 @@ public class JsonMaker implements Maker {
                 field.setAccessible(true);
                 jsonString.setString((String) field.get(object));
 
-                jsonObject.add(jvKey, jsonString);
+                jsonMap.add(jvKey, jsonString);
 
                 continue;
             }
@@ -140,7 +152,7 @@ public class JsonMaker implements Maker {
                     jvValue = new JsonFalse();
                 }
 
-                jsonObject.add(jvKey, jvValue);
+                jsonMap.add(jvKey, jvValue);
 
                 continue;
             }
@@ -156,7 +168,7 @@ public class JsonMaker implements Maker {
                 JsonNumber jsonNumber = new JsonNumber();
                 jsonNumber.setNumber(field.get(object) + "");
 
-                jsonObject.add(jvKey, jsonNumber);
+                jsonMap.add(jvKey, jsonNumber);
 
                 continue;
             }
@@ -165,24 +177,12 @@ public class JsonMaker implements Maker {
 
                 JsonValue jvValue = toJsonArray((List)field.get(object));
 
-                jsonObject.add(jvKey, jvValue);
+                jsonMap.add(jvKey, jvValue);
             }
 
         }
 
-        return jsonObject;
-    }
-
-    public Object fromJson(String jsonString, Class clazz) throws Exception {
-
-        Parse parseJson = new ParseJson();
-        Syntax syntaxParse = new SyntaxParse(parseJson);
-
-        syntaxParse.setStart(jsonString);
-
-        JsonValue jv = syntaxParse.syntaxJson();
-
-        return transJson(jv, clazz);
+        return jsonMap;
     }
 
     private Object transJson(JsonValue jsonValue, Class clazz) {
@@ -227,7 +227,7 @@ public class JsonMaker implements Maker {
 
     private Object fromSingleJson(JsonValue jv, Class clazz) throws IllegalAccessException, InvocationTargetException, InstantiationException {
 
-        if (jv instanceof JsonObject) {
+        if (jv instanceof JsonMap) {
 
             Field[] fields = clazz.getDeclaredFields();
 
@@ -243,14 +243,11 @@ public class JsonMaker implements Maker {
 
                 Map.Entry<String, Field> entryC = it1.next();
 
-                Iterator<Map.Entry<JsonString, JsonValue>> it2 = ((JsonObject)jv).getMap().entrySet().iterator();
+                Set<Map.Entry<JsonString, JsonValue>> entrySet= ((JsonMap)jv).getMap().entrySet();
 
-                while (it2.hasNext()) {
+                for (Map.Entry<JsonString, JsonValue> entryJ : entrySet) {
 
-                    Map.Entry<JsonString, JsonValue> entryJ = it2.next();
-
-
-                    if (entryC.getKey().equals((entryJ.getKey()).getString().replaceAll("\"", ""))) {
+                    if (entryC.getKey().equals((entryJ.getKey()).getString())) {
 
                         Field target = entryC.getValue();
 

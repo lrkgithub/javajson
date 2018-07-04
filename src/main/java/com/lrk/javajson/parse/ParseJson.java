@@ -1,6 +1,7 @@
 package main.java.com.lrk.javajson.parse;
 
 import main.java.com.lrk.javajson.core.Parse;
+import main.java.com.lrk.javajson.log.Log;
 import main.java.com.lrk.javajson.parse.elment.JsonEmpty;
 import main.java.com.lrk.javajson.parse.elment.JsonFalse;
 import main.java.com.lrk.javajson.parse.elment.JsonNull;
@@ -23,19 +24,19 @@ public class ParseJson implements Parse {
         if (index < jsonchars.length) {
             JsonValue jv = parse();
             if (jv == null) {
-                System.out.println("inner wrong!");
+                Log.log("inner wrong!");
                 return null;
             } else if (jv.getToken().equals(JsonToken.BADTOKEN)) {
-                System.out.println("bad token ! " + jv.get());
+                Log.log("bad token ! " + jv.get());
                 throw new Exception();
             } else if (jv.getToken().equals(JsonToken.NUMBER)) {
-                System.out.println("number is " + jv.get());
+                Log.log("number is " + jv.get());
                 return jv;
             } else if (jv.getToken().equals(JsonToken.STRING)) {
-                System.out.println("String is " + jv.get());
+                Log.log("String is " + jv.get());
                 return jv;
             } else {
-                System.out.println("the token is " + jv.getToken() + " and the value is " + jv.get());
+                Log.log("the token is " + jv.getToken() + " and the value is " + jv.get());
                 return jv;
             }
         }
@@ -149,10 +150,10 @@ public class ParseJson implements Parse {
 
     private JsonValue parseNumber(char[] jsons) {
 
-        String value = jsons[index] + "";
+        StringBuilder value = new StringBuilder(jsons[index] + "");
 
-        if (value.equals("-")) {
-            value += jsons[++index] + "";
+        if ("-".equals(jsons[index] + "")) {
+            value.append(jsons[++index]);
         }
 
         index++;
@@ -161,13 +162,13 @@ public class ParseJson implements Parse {
 
         while (index < jsons.length) {
             if (jsons[index] == '.') {
-                value += ".";
+                value.append(".");
                 index++;
                 continue;
             }
 
             if (isDigital(jsons[index])) {
-                value += jsons[index++];
+                value.append(jsons[index++]);
             } else {
                 index--;
                 break;
@@ -178,7 +179,7 @@ public class ParseJson implements Parse {
 
         JsonValue jv = new JsonNumber();
         jv.setToken(JsonToken.NUMBER);
-        jv.setNumber(value);
+        jv.setNumber(value.toString());
         return jv;
     }
 
@@ -218,13 +219,14 @@ public class ParseJson implements Parse {
 
     private JsonValue parseString(char[] jsons) {
         assert(isString(jsons[index]));
-        String value = jsons[index++] + "";
+        index++;
+        String value = "";
         while(index < jsons.length) {
             if (jsons[index] != '"') {
                 value += jsons[index++];
             } else {
 //                index++;
-                value += "\"";
+//                value += "\"";
                 break;
             }
         }
